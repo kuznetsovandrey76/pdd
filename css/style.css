@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+}
+.question {
+    border: 1px solid black;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.question__answer:hover {
+    background: rgba(173, 216, 230, .5);
+    cursor: pointer;
+}

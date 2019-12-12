@@ -1,0 +1,38 @@
+extends ./layout/default
+
+block title 
+  | Add
+
+block main
+    .container
+        .row
+            .col-6
+                h3.mb-1 Новый вопрос
+                form(id='add-question' method='post' action='/add-question')
+                    .d-flex.align-items-center
+                        input.mr-2(type="text" id='block_number' name='block_number')
+                        label.mb-0(for="block_number") № блока
+                    .d-flex.align-items-center
+                        input.mr-2(type="checkbox" id='image' name='image' value='1')
+                        label.mb-0(for="image") Есть изображение
+                    .d-flex.align-items-center
+                        input.mr-2(type="text" id='question_text' name='question_text')
+                        label.mb-0(for="question_text") Текст вопроса
+                    input.my-2(type="submit")
+
+            .col-6
+                h3.mb-1 Новый ответ
+                form(id='add-answer' method='post' action='/add-answer')
+                    .d-flex.align-items-center.mb-1
+                        input.mr-2(type="text" id='question_id' name='question_id')
+                        label.mb-0(for="question_id") № вопроса
+                    .d-flex.align-items-center
+                        input.mr-2(type="text" id='answer_text' name='answer_text')
+                        label.mb-0(for="answer_text") Текст ответа
+                    .d-flex.align-items-center
+                        input.mr-2(type="checkbox" id='correct' name='correct' value='1')
+                        label.mb-0(for="correct") Правильный ответ?
+                    input.my-2(type="submit")
+    
+
+

@@ -1,0 +1,13 @@
+extends ./layout/default
+
+block title 
+  | Home
+
+block main
+  div.mb-3
+    h3.mb-0 Welcome to my blog
+    a.text-uppercase(href='./add') add new question
+    
+    each item in data
+      //- p= item.question_text
+      p.mb-0= item.answer_text

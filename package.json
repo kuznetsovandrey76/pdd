@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/kuznetsovandrey76/pdd/issues"
   },
-  "homepage": "https://github.com/kuznetsovandrey76/pdd#readme"
+  "homepage": "https://github.com/kuznetsovandrey76/pdd#readme",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.0.1",
+    "pug": "^2.0.4"
+  }
 }
