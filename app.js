@@ -28,50 +28,64 @@ return db;
 
 let db = reconnect_db();
 
-
+app.use(express.static(__dirname + '/public'));
 app.set("view engine", "pug");
+
 
 app.get("/", function(req, res){
 
-    db.promise()
-        .query(`
-            select answer_text from questions q
-            join answers a
-            on q.id = a.question_id
-            where q.id = 1
-            `)
-        .then(([rows, fields]) => {
-            let answers = [];
-            for (let item of rows) {
-                answers.push(item.answer_text)
+    const getQuestion = () => {
+
+        db.query(`
+        select question_id as q_id, 
+            a.id as a_id, 
+            question_text as q_text, 
+            answer_text as a_text from questions q
+        join answers a
+        on q.id = a.question_id
+        `, (err, data) => {
+            if (err) throw err;
+
+            let questions_to_pug = []
+            let currentQuestionID = 1;
+
+            let question = {
+                q_text: null,
+                q_id: currentQuestionID,
+                a: []
             }
 
-            log(answers)
-            // return answers
-        })
-        // .then((answers) => {
-        //     log(answers[0][0])
-        // })
-        .catch((err) => {
-            log(err)
-        })
+            for(let item of data) { 
+                if (item.q_id > currentQuestionID) {
+                    currentQuestionID += 1
 
+                    // Для последнего вопроса нужна заглушка
+                    // Пустой ответ 801 вопроса
+                    questions_to_pug.push(question)    
 
-    // let getAnswers = () => {
-    //     db.query(`
-    //     select answer_text from questions q
-    //     join answers a
-    //     on q.id = a.question_id
-    //     where q.id = 1
-    //     `, (err, answers) => {
-    //         if(err) return log(err);
-    //         // res.render("index", {
-    //         //     data: data
-    //         // });
-    //         // log(answers)
-    //         return answers;
-    //       });
-    // }
+                    // RESET question
+                    question = {
+                        q_text: null,
+                        q_id: currentQuestionID,
+                        a: []
+                    }
+
+                } 
+
+                question.q_id = item.q_id                
+                question.q_text = item.q_text
+                question.a.push({ q_id: item.q_id, 
+                    a_id: item.a_id, 
+                    a_text: item.a_text})
+                
+            }
+            res.render("index", {
+                data: questions_to_pug
+            });
+        })
+    }
+
+    getQuestion()
 
 
 });

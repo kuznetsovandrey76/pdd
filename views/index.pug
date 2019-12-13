@@ -7,7 +7,9 @@ block main
   div.mb-3
     h3.mb-0 Welcome to my blog
     a.text-uppercase(href='./add') add new question
-    
-    each item in data
-      //- p= item.question_text
-      p.mb-0= item.answer_text
+
+    each item in data    
+      .question
+        h5.question__text(class= `question-id-${item.q_id}`).mb-0= item.q_text
+        each answ in item.a
+          p.question__answer(class= `answer-id-${answ.a_id} question-id-${answ.q_id}`).mb-0= answ.a_text
