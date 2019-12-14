@@ -8,6 +8,14 @@
 }
 
 .question__answer:hover {
-    background: rgba(173, 216, 230, .5);
+    /* background: rgba(173, 216, 230, .5); */
     cursor: pointer;
+}
+
+.answer__right {
+    background: lightgreen;
+}
+
+.answer__wrong {
+    background: tomato;
 }

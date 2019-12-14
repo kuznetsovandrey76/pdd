@@ -19,3 +19,13 @@ create table answers(
 );
 
 INSERT INTO questions (block_number, image, question_text) VALUES (1, 0, 'В каком случае водитель совершит вынужденную остановку?');
+
+
+create table rightAnswer(
+    id int auto_increment,
+    question_id int not null,
+    answer_id int not null,
+    primary key (id)
+);
+
+INSERT INTO rightAnswer (question_id, answer_id) VALUES (1, 2);
