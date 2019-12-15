@@ -189,7 +189,10 @@ app.post('/update-answer-counter', (req, res) => {
 
 app.get('/answer-data', (req, res) => {
         // Запрос к БД
-        db.promise().query(`select id, counter from answers`)
+        db.promise().query(`
+        select a.id as id, a.counter as counter, ifnull(r.id, 0) as correct from answers a 
+        left join rightAnswer r on a.id = r.answer_id 
+        order by a.id`)
         .then( ([rows,fields]) => {
             try {
                 let addZero = (n) => n < 10 ? '0'+ n : n;                
@@ -197,7 +200,9 @@ app.get('/answer-data', (req, res) => {
                 let result = [];
 
                 for(let item of rows) {
-                    result.push({id: addZero(item.id), counter: item.counter})
+                    result.push({id: addZero(item.id)+'', 
+                                counter: item.counter,
+                                correct: item.correct})
                 }
                 return result;
             } catch(err) {

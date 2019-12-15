@@ -1,6 +1,8 @@
 $(document).ready(() => {
-    $('.question__answer').on('click', async (e) => {
+    $('.question_active .question__answer').on('click', async (e) => {
         let select = e.target
+
+        $(select).parent().parent().toggleClass('question_active question_answered')
 
         let questionID = $(select).attr('data-question-id')
         let answerID = $(select).attr('data-answer-id')
@@ -21,9 +23,9 @@ $(document).ready(() => {
         const json = await response.json()
         
         if( json.right_answer ) {
-            $(select).addClass('answer__right')
+            $(select).addClass('question__answer_right')
         } else {
-            $(select).addClass('answer__wrong')
+            $(select).addClass('question__answer_wrong')
         } 
     })
 
@@ -71,7 +73,7 @@ $(document).ready(() => {
         d3.select('.d3')
             .selectAll('.d3__item')
             .data(data)
-            .append('div').attr('class', 'd3__counter')
+            .append('div').attr('class', function (d) {if (d.correct) { return 'd3__counter d3__counter_r'} else { return 'd3__counter d3__counter_w'}})
             .style('width', function (d) { return `${d.counter * 10}px`})
             .text(function (d) {return d.counter})
         

@@ -30,6 +30,8 @@ INSERT INTO questions (id, block_number, image, question_text) VALUES (801, 5, 0
 
 ALTER TABLE answers ADD counter INT NOT NULL default 0 AFTER correct;
 
+ALTER TABLE answers DROP COLUMN correct;
+
 Очистить данные в одном из столбцов таблицы
 UPDATE answers SET counter = 0;
 
@@ -53,6 +55,9 @@ create table rightAnswer(
 );
 
 INSERT INTO rightAnswer (question_id, answer_id) VALUES (1, 2);
+
+Для rightAnswer
+select a.id as id, a.counter as counter, ifnull(r.id, 0) as correct from answers a left join rightAnswer r on a.id = r.answer_id order by a.id
 ```
 
 

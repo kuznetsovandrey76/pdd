@@ -4,19 +4,19 @@ block title
   | Home
 
 block main
-
-  div.mb-3
-
-    h3.mb-0 Билеты ПДД
-    a.text-uppercase.d-block(href='./add') Добавить вопрос/ответ
-    a.text-uppercase.d-block(href='./stat') Статистика
+  .main
+    h3.main__title.mb-0 Билеты ПДД
+    nav.mb-4
+      a.text-uppercase.d-block(href='./add') Добавить вопрос/ответ
+      a.text-uppercase.d-block(href='./stat') Статистика
 
     each item in data    
-      .question
-        h5.question__text(data-question-id= `question-id-${item.q_id}`).mb-0= item.q_text
-        
-        if item.have_image
-          img.question__image(src=`./img/${item.q_id}.jpg`)
-        
-        each answ in item.a
-          p.question__answer(data-answer-id= `answer-id-${answ.a_id}` data-question-id= `question-id-${answ.q_id}`).mb-0= answ.a_text
+      .question.question_active
+        .question__header
+        .question__main          
+          if item.have_image
+            img.question__image(src=`./img/${item.q_id}.jpg`)
+          p.question__text(data-question-id= `question-id-${item.q_id}`)= item.q_text
+          
+          each answ in item.a
+            p.question__answer(data-answer-id= `answer-id-${answ.a_id}` data-question-id= `question-id-${answ.q_id}`)= answ.a_text
