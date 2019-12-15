@@ -19,3 +19,18 @@
 .answer__wrong {
     background: tomato;
 }
+
+.d3__item {
+    margin-bottom: .2em;
+}
+.d3__text {
+    margin-right: .2em;
+}
+.d3__text:after {
+    content: '.'
+}
+
+
+.d3__counter {
+    background: lightblue;
+}

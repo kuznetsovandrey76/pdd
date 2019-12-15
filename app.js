@@ -12,8 +12,7 @@ const urlencodedParser = bodyParser.urlencoded({extended: false});
 let requestTime = function(req, res, next) {
     req.requestTime = new Date()
     next()
-  }
-  
+  }  
 app.use(requestTime)
 
 
@@ -32,14 +31,15 @@ function reconnect_db(){
 });
 return db;
 }
-
 let db = reconnect_db();
+
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: '1mb'}));
 app.set("view engine", "pug");
 
 
+// PAGES
 app.get("/", function(req, res){
 
     let currentDate = {
@@ -50,7 +50,6 @@ app.get("/", function(req, res){
         minutes: req.requestTime.getMinutes(),
         seconds: req.requestTime.getSeconds()
     }
-
     log(chalk.yellow(`connect... ${currentDate.date}-${currentDate.month}-${currentDate.year} ${currentDate.hours}:${currentDate.minutes}:${currentDate.seconds}`))
 
     const getQuestion = () => {
@@ -113,14 +112,18 @@ app.get("/", function(req, res){
 
 });
 
-
 app.get("/add", function(req, res){
     res.render("add");
 });
 
+app.get("/stat", function(req, res){
+    res.render("stat");
+});
 
-app.post("/add-question", urlencodedParser, function (req, res) {
-         
+
+
+// Middleware
+app.post("/add-question", urlencodedParser, function (req, res) {         
     if(!req.body) return res.sendStatus(400);
     const   block_number = Number(req.body.block_number),
             image = req.body.image ? Number(req.body.image) : 0,
@@ -134,9 +137,7 @@ app.post("/add-question", urlencodedParser, function (req, res) {
     });
 });
  
-
-app.post("/add-answer", urlencodedParser, function (req, res) {
-         
+app.post("/add-answer", urlencodedParser, function (req, res) {         
     if(!req.body) return res.sendStatus(400);
     const   question_id = Number(req.body.question_id),
             correct = req.body.correct ? Number(req.body.correct) : 0,
@@ -150,9 +151,7 @@ app.post("/add-answer", urlencodedParser, function (req, res) {
     });
 });
 
-
 app.post('/check-answer', (req, res) => {
-
     // Преобразуем data-question-id и data-answer-id в integer 
     const data = req.body;
     const question_id = data.questionID.split('-')[2];
@@ -163,7 +162,12 @@ app.post('/check-answer', (req, res) => {
     select answer_id from rightAnswer 
     where question_id = ${question_id}`)
     .then( ([rows,fields]) => {
-        return result = rows[0].answer_id == answer_id
+        try {
+            return result = rows[0].answer_id == answer_id
+        } catch(err) {
+            log(chalk.red(err.message))
+            return
+        }
     })
     .then(( result ) => {
         // Возвращаем результат в main.js ('.question__answer'
@@ -175,6 +179,40 @@ app.post('/check-answer', (req, res) => {
     .catch((err) => log(err))
 });
 
+app.post('/update-answer-counter', (req, res) => {
+    const data = req.body;
+    const answer_id = data.answerID.split('-')[2];
+    db.query(`
+        UPDATE answers SET counter = counter + 1 
+        WHERE id = ${answer_id}`)
+});
+
+app.get('/answer-data', (req, res) => {
+        // Запрос к БД
+        db.promise().query(`select id, counter from answers`)
+        .then( ([rows,fields]) => {
+            try {
+                let addZero = (n) => n < 10 ? '0'+ n : n;                
+                
+                let result = [];
+
+                for(let item of rows) {
+                    result.push({id: addZero(item.id), counter: item.counter})
+                }
+                return result;
+            } catch(err) {
+                log(chalk.red(err.message))
+                return
+            }
+        })
+        .then(( result ) => {
+            // Возвращаем результат в main.js - d3_data
+            res.json({
+                data: result
+            })
+        })
+        .catch((err) => log(err))
+});
 
 
 const PORT = process.env.PORT || 3000;

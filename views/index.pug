@@ -4,9 +4,12 @@ block title
   | Home
 
 block main
+
   div.mb-3
+
     h3.mb-0 Билеты ПДД
-    a.text-uppercase(href='./add') Добавить вопрос/ответ
+    a.text-uppercase.d-block(href='./add') Добавить вопрос/ответ
+    a.text-uppercase.d-block(href='./stat') Статистика
 
     each item in data    
       .question
