@@ -1,9 +1,16 @@
 const log = console.log
-const chalk = require('chalk');
 
+const chalk = require('chalk');
 const mysql = require('mysql2');
 const express = require("express");
 const bodyParser = require("body-parser");
+
+// .emv
+const dotenv = require('dotenv');
+dotenv.config();
+
+// My_modules
+const currentDate = require('./my_module/current_date')
  
 const app = express();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
@@ -19,10 +26,10 @@ app.use(requestTime)
 function reconnect_db(){
   let db = mysql.createPool({
     connectionLimit : 10,
-    host     : 'akuznetsov.beget.tech',
-    user     : 'akuznetsov_pdd',
-    database : 'akuznetsov_pdd',
-    password : '***' // ИЗМЕНИТЬ
+    host     : `${process.env.HOST}`,
+    user     : `${process.env.USER}`,
+    database : `${process.env.DB}`,
+    password : `${process.env.PASS}`
   });
   db.on('error', function(err){
       log(err.code);
@@ -41,16 +48,7 @@ app.set("view engine", "pug");
 
 // PAGES
 app.get("/", function(req, res){
-
-    let currentDate = {
-        date: req.requestTime.getDate(),
-        month: req.requestTime.getMonth(),
-        year: req.requestTime.getFullYear(),
-        hours: req.requestTime.getHours(),
-        minutes: req.requestTime.getMinutes(),
-        seconds: req.requestTime.getSeconds()
-    }
-    log(chalk.yellow(`connect... ${currentDate.date}-${currentDate.month}-${currentDate.year} ${currentDate.hours}:${currentDate.minutes}:${currentDate.seconds}`))
+    currentDate(req)
 
     const getQuestion = () => {
 
@@ -143,12 +141,31 @@ app.post("/add-answer", urlencodedParser, function (req, res) {
             correct = req.body.correct ? Number(req.body.correct) : 0,
             answer_text = req.body.answer_text;
 
-    // log(question_id, correct, answer_text)
-            
-    db.query("INSERT INTO answers (question_id, correct, answer_text) VALUES (?, ?, ?)", [question_id, correct, answer_text], function(err, data) {
-      if(err) return log(err);
-      res.redirect("/add");
+    // log(question_id, answer_text)
+    
+    // Последняя добавленная запись SELECT id FROM answers ORDER BY id DESC LIMIT 1 
+    
+    if(correct) {
+        let answer_id = db.query("SELECT id FROM answers ORDER BY id DESC LIMIT 1", function(err, data) {
+            if(err) return log(err);
+            log(1, data[0].id + 1)
+            return data[0].id + 1
+        });
+        
+        log(answer_id)
+
+        db.query("INSERT INTO rightAnswer (answer_id) VALUES (?)", [answer_id], function(err, data) {
+            if(err) return log(err);
+        });
+    }
+    
+        
+    db.query("INSERT INTO answers (question_id, answer_text) VALUES (?, ?)", [question_id, answer_text], function(err, data) {
+        if(err) return log(err);
+        res.redirect("/add");
     });
+
+ 
 });
 
 app.post('/check-answer', (req, res) => {
@@ -160,7 +177,7 @@ app.post('/check-answer', (req, res) => {
     // Запрос к БД
     db.promise().query(`
     select answer_id from rightAnswer 
-    where question_id = ${question_id}`)
+    where id = ${question_id}`)
     .then( ([rows,fields]) => {
         try {
             return result = rows[0].answer_id == answer_id

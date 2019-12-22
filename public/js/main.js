@@ -31,7 +31,7 @@ $(document).ready(() => {
 
 
 
-    $('.question__answer').on('click', async (e) => {
+    $('.question_active .question__answer').on('click', async (e) => {
         let select = e.target
 
         let answerID = $(select).attr('data-answer-id')

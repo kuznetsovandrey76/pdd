@@ -2,25 +2,33 @@
     margin: 0;
 }
 .question {
-    background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
     margin-bottom: 1rem;
     padding: 1rem;
+    max-width: 50%;
+}
+
+.question_active {
+    background-color: #fff;
+}
+
+.question_answered {
+    background-color: #ddd;
 }
 
 .question__text {
-    margin-bottom: 0.2em;
+    margin-bottom: 0.5em;
 }
 
 .question__image {
     width: 100%;
-    margin-bottom: 0.4em;
+    margin-bottom: 0.5em;
 }
 
 .question__answer {
     border: 1px solid #ddd;
-    padding: 0.3em;
+    padding: 0.5em;
     margin-bottom: 0.5em;
     background: white;
     border-radius: 3px;
